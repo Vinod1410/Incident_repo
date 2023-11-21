@@ -1,0 +1,76 @@
+--- 
+- name: Check if host exists in tower inventory
+  gather_facts: false
+  hosts: localhost
+ 
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']"
+        with_items: "{{HOSTS}}"
+ 
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED:  This target host {{HOSTS}} does not  exist in tower Ansible Inventory 2L22"
+        failed_when: True
+ 
+- name: Playbook check if host is Linux
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  vars:
+    HOSTS:
+ 
+  tasks:
+    - block:
+      - name: "Fail if Variable ansible_connection is winrm"
+        assert:
+          that:
+            - ansible_connection != "winrm"
+          msg: "Playbook is for linux not windows"
+ 
+      rescue:
+      - name: Invalid OS for this playbook
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED: {{ HOSTS }} is a windows cannot run this playbook"
+        failed_when: True
+ 
+# restart bladelogic client
+- name: restart bladelogic client
+  hosts: "{{ HOSTS }}"
+  gather_facts: false
+  become: true
+  tasks:
+    - block:
+      - name: "Check if script RSCD Agent exists"
+        stat: 
+          path: /etc/init.d/rscd
+        register: RSCDAgent
+        failed_when: RSCDAgent.stat.exists == false
+ 
+      - name: stop BladeLogic RSCD Agent 
+        shell: "/etc/init.d/rscd stop"
+        failed_when: false
+ 
+      - name: start BladeLogic RSCD Agent 
+        shell: "/etc/init.d/rscd start"
+ 
+      - name: Verify that 3 process BladeLogic are started
+        shell: 'sleep 2; ps -ef | grep -v grep | grep -cE "bin/rsc[dw]$"'
+        register: nbproc
+        changed_when: false
+        failed_when: nbproc.stdout|int != 3
+ 
+      - name: Log output when successful
+        debug:
+          msg:
+            - "SYNTBOT_OUTPUT: SUCCESSFUL restart of blade logic agent (rscd) on {{ ansible_host }}"
+ 
+      rescue:
+      - name: Log output when failed
+        debug:
+          msg:
+            - "SYNTBOT_OUTPUT: FAILED: Task {{ ansible_failed_task.name}} failed on {{ ansible_host }}"
+        failed_when: True
