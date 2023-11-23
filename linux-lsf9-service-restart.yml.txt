@@ -1,0 +1,50 @@
+- name: Check if host exists in tower inventory
+  gather_facts: false
+  hosts: localhost
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']"
+        with_items: "{{HOSTS}}"
+
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED: This target host {{ HOSTS }} does not exist in the Ansible Tower Inventory 2L22"
+        failed_when: True
+
+- name: Restart service for lsf9 on Linux
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  become: true
+  vars:
+    HOSTS: ''
+    SERVICE: 'lsf9'
+
+  tasks:
+    - block:
+      - name: Restart service lsf9
+        service:
+          name:  "{{SERVICE}}" 
+          state: restarted
+        register: result
+        
+      - name: Verify that service lsf9 has started 
+        debug:
+          msg: "Service successfully started"
+        when: result is defined and result.changed == true and result.state == "started" 
+      
+      - name: Log output for SYNTBOT when successfull
+        debug:
+          msg:
+           - "SYNTBOT_OUTPUT: SUCCESSFUL restart of lsf9 service on host {{ HOSTS }}"
+        when: result is defined and result.changed == true and result.state == "started"
+    
+      rescue:
+      - name: Log output for SYNTBOT when failed
+        debug:
+          msg:
+             - "SYNTBOT_OUTPUT: FAILED:  Task {{ ansible_failed_task.name}} failed on {{ HOSTS }}"
+        failed_when: True

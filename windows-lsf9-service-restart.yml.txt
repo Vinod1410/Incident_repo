@@ -1,0 +1,61 @@
+- name: Check if host exists in tower inventory
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS | join(', ') }} does not exist in Ansible Tower's inventory - [WARNING]Could not match supplied host pattern, ignoring"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']"
+        with_items: "{{HOSTS}}"
+
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED:  Task to Check if hosts exists in tower  failed on {{ HOSTS }}: Failed to find hosts in Ansible tower inventory "
+        failed_when: True
+
+- name: Restart LSFP services (LIM,RES,SBD) on Windows
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  vars:
+    HOSTS: ""
+  tasks:
+    - block:
+      - name: Check if services exist
+        win_service:
+           name: "{{item}}"
+        loop:
+           - LIM
+           - RES
+           - SBD
+
+      - name: restart services LIM, RES and SBD
+        win_service:
+           name: "{{item}}"
+           state: restarted
+        loop:
+           - LIM
+           - RES
+           - SBD
+
+      - name: check is services LIM, RES and SBD are started
+        win_service:
+           name: "{{item}}"
+           state: started
+        loop:
+           - LIM
+           - RES
+           - SBD
+
+      - name: Log output for SYNTBOT when all services are already running
+        debug:
+          msg: "SYNTBOT_OUTPUT: SUCCESSFUL restart of lsf9 service on host {{ HOSTS }}"
+
+      rescue:
+      - name: Log output for SYNTBOT when failed
+        debug:
+          msg:
+             - "SYNTBOT_OUTPUT: FAILED:  Task {{ ansible_failed_task.name}} failed on {{ HOSTS }}"
+        failed_when: True
