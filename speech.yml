@@ -1,8 +1,4 @@
 --- 
-- name: Check if host exists in tower inventory
-  gather_facts: false
-  hosts: localhost
-  
 - name: Using a different voice and a start sound
   community.windows.win_say:
     start_sound_path: C:\Users\vv8\Downloads\jarvis_ringtone.mp3
