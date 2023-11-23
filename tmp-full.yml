@@ -1,0 +1,145 @@
+---
+- name: Check if host exists in tower inventory
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']" 
+        with_items: "{{HOSTS}}"
+
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED:  This target host {{ HOSTS }} does not exist in the Ansible Tower Inventory 2L22"
+        failed_when: True
+
+- name: Check if host has the right OS
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  vars:
+    HOSTS:
+
+  tasks:
+    - block:
+      - name: "Fail if Variable ansible_connection is winrm"
+        assert:
+          that:
+            - ansible_connection != "winrm"
+          msg: "playbook is for linux not windows"
+
+      rescue:
+      - name: Invalid OS for this playbook
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED: {{ HOSTS }} is a windows cannot run this playbook"
+        failed_when: True
+
+- name: Playbook check /tmp FULL
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  become: true
+  vars:
+    HOSTS:
+    THRESHOLD:
+
+  tasks:
+    - block:
+
+      - name: Assert that THRESHOLD is provided
+        assert:
+          that:
+            - THRESHOLD | mandatory
+            - THRESHOLD is defined
+            - THRESHOLD | int > 0
+          msg: "Please provide THRESHOLD with a number "
+
+      - name: Fail if Extra Variable THRESHOLD {{ THRESHOLD }} is empty
+        fail:
+          msg: "Variable THRESHOLD: {{ THRESHOLD }} is empty."
+        when: item < 1
+        with_items: "{{THRESHOLD}}"
+
+      - name: Copy script files/TmpClean.sh
+        copy:
+          src: "{{ item.src }}"
+          dest: "{{ item.dest }}"
+          mode: 0775
+          force: yes
+        with_items:
+         - { src: 'files/TmpClean.sh',dest: '/tmp/TmpClean.sh'}
+
+      - name: Get percentage used /tmp  on {{HOSTS}}
+        shell: df -hP /tmp |grep /tmp | awk '{print $5}' | cut -d% -f1
+        register: usedpercent
+        changed_when: false
+
+      - name: "Check if percentage used /tmp {{usedpercent.stdout}}% (it is less than thershold {{THRESHOLD}}%) on {{HOSTS}}"
+        assert:
+          that: usedpercent.stdout|float  < {{THRESHOLD}}|float
+          msg: 'space used has reached {{THRESHOLD}}% threshold'
+        register: checkfs
+        ignore_errors: true
+
+      - name: "Remediation run /tmp/TmpClean.sh {{ THRESHOLD }} (Delete file greater than 500MB) on {{HOSTS}}"
+        shell: /tmp/TmpClean.sh "{{ THRESHOLD }}"
+        register: result_clean
+        when: checkfs.failed == true
+        ignore_errors: true
+
+      - name: "Get percentage used /tmp  (%Use) after remediation on {{HOSTS}}"
+        shell: df -hP /tmp |grep /tmp | awk '{print $5}' | cut -d% -f1
+        register: secondpercent
+        changed_when: false
+        when: checkfs.failed == true
+
+      - name: "Check if percentage used /tmp is {{secondpercent.sdtout}}% (it is less than threshold {{THRESHOLD}}%) on {{HOSTS}}"
+        assert:
+          that: secondpercent.stdout|float  < {{THRESHOLD}}|float
+          msg: 'space used  has reached {{secondpercent.stdout}}% threshold {{THRESHOLD}}%'
+        when: checkfs.failed == true
+
+      - name: Log output for SYNTBOT OK
+        debug:
+          msg:
+           - "SYNTBOT_OUTPUT: SUCCESSFUL: Percentage used /tmp is {{ usedpercent.stdout }}% (it is less than threshold {{THRESHOLD}}%) on {{HOSTS}}"
+        when: secondpercent.stdout is undefined
+
+      - name: Log output for SYNTBOT OK
+        debug:
+          msg:
+           - "SYNTBOT_OUTPUT: SUCCESSFUL: Percentage used /tmp is {{secondpercent.stdout}}% (it is less than threshold {{THRESHOLD}}%) on {{HOSTS}}"
+        when: secondpercent.stdout is defined
+
+      rescue:
+
+      - name: Display files in /tmp directory on {{ HOSTS }}
+        shell: "df -h /tmp ;echo \"---- find file size +500MB ----\"; find /tmp -xdev -type f -size +500M -exec du -sh {} ';' | sort -rh" 
+        register: result_display
+
+
+      - name: Log output for SYNTBOT FAILED secondpercent is defined
+        debug:
+          msg: 
+           - "SYNTBOT_OUTPUT: FAILED: Percentage used /tmp is {{secondpercent.stdout}}% (it is greater than threshold {{THRESHOLD}}%) on {{HOSTS}}"
+           - "SYNTBOT_DISLAY: {{result_display.stdout}}"
+        failed_when: true 
+        when: secondpercent is defined
+
+      - name: Log output for SYNTBOT FAILED  secondpercent is not defined
+        debug:
+          msg: 
+           - "SYNTBOT_OUTPUT: FAILED: Task {{ansible_failed_result.msg}}"
+           - "SYNTBOT_DISLAY: {{result_display.stdout}}"
+        failed_when: true 
+        when: secondpercent is not defined
+
+      always:
+      - name: Delete files on {{ HOSTS }}
+        file:
+          path: "{{ item }}"
+          state: absent
+        with_items:
+          - /tmp/TmpClean.sh

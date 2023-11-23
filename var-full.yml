@@ -1,0 +1,122 @@
+---
+- name: Check if host exists in tower inventory
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']" 
+        with_items: "{{HOSTS}}"
+
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED:  Task to Check if hosts exists in tower  failed on {{ HOSTS }}: Failed to find hosts in Ansible tower inventory "
+        failed_when: True
+
+- name: Check if host has the right OS
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+
+  tasks:
+    - block:
+      - name: "Fail if Variable ansible_connection is winrm"
+        assert:
+          that:
+            - ansible_connection != "winrm"
+          msg: "playbook is for linux not windows"
+
+      rescue:
+      - name: Invalid OS for this playbook
+        debug:
+          msg: "SYNTBOT_OUTPUT: FAILED: {{ HOSTS }} is a windows cannot run this playbook"
+        failed_when: True
+
+- name: Playbook check /var FULL
+  gather_facts: false
+  hosts: "{{ HOSTS }}"
+  become: true
+  vars:
+    HOSTS:
+    THRESHOLD:
+
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable THRESHOLD is an integer"
+        assert:
+          that:
+            - THRESHOLD|int <= 100
+            - THRESHOLD|int > 0
+          msg: "THRESHOLD must be between 0 and 100"
+
+      - name: command df
+        shell: df -hP /var |grep /var | awk '{print $5}' | cut -d% -f1
+        register: availpercent
+        changed_when: false
+
+      - name: Check if /var is lower than {{ THRESHOLD }}% on {{ HOSTS }}
+        assert:
+          that: availpercent.stdout|float  < {{ THRESHOLD }}|float
+          msg: 'disk space has reached {{ THRESHOLD }}% threshold'
+        register: checkfs
+        ignore_errors: true
+
+      - name: Clean yum cache
+        command: yum clean all
+        args:
+          warn: no
+        when: checkfs.failed == true
+
+      - name: Check for compress in logrotate conf
+        lineinfile:
+          path: /etc/logrotate.d/syslog
+          regexp: '^\s*compress'
+          insertbefore: '^\s*postrotate'
+          line: '    compress'
+        when: checkfs.failed == true
+
+      - name: Force logrotate in background
+        shell: cd /tmp/; nohup /usr/sbin/logrotate -f /etc/logrotate.conf >/dev/null 2>&1 &
+        failed_when: false
+        when: checkfs.failed == true
+
+      - name: check FS space available
+        shell: df -hP /var |grep /var | awk '{print $5}' | cut -d% -f1
+        register: secondpercent
+        changed_when: false
+        when: checkfs.failed == true
+
+      - name: Check if /var is lower than {{ THRESHOLD }}% on {{ HOSTS }}
+        assert:
+          that: secondpercent.stdout|float  < {{ THRESHOLD }}|float
+          msg: 'disk space has reached {{ THRESHOLD }}% threshold'
+        when: checkfs.failed == true
+
+      - name: Log output for SYNTBOT OK
+        debug:
+          msg: 
+           - "SYNTBOT_OUTPUT: SUCCESSFUL: on {{ HOSTS }} - FS /var is {{ availpercent.stdout }}%"
+        when: secondpercent.stdout is undefined
+
+      - name: Log output for SYNTBOT OK
+        debug:
+          msg: 
+           - "SYNTBOT_OUTPUT: SUCCESSFUL: on {{ HOSTS }} - FS /var is {{ secondpercent.stdout }}%"
+        when: secondpercent.stdout is defined
+
+      rescue:
+      - name: Display files in /var directory on "{{ HOSTS }}"
+        shell: "df -h /var ;echo \"---- find file size +500MB ----\"; find /var -xdev -type f -size +500M -exec du -sh {} ';' | sort -rh" 
+        register: result_display
+        changed_when: false
+
+
+      - name: Log output for SYNTBOT FAILED
+        debug:
+          msg: 
+           - "SYNTBOT_OUTPUT: FAILED: Task {{ ansible_failed_task.name}} failed on {{ HOSTS }}: {{ ansible_failed_result.msg }}"
+           - "SYNTBOT_DISLAY: {{ result_display.stdout }}"
+        failed_when: true 
