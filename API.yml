@@ -1,0 +1,19 @@
+---
+- name: Triggring API for server maintaince mode
+  hosts: local server
+  tasks:
+    - name: send POST request to API server maintaince mode
+      uri:
+        url: ""
+        method: POST
+        statuscode: 200
+        timeout: 30
+        body_format: json
+        headers:
+          content-type: "application/json"
+        body: 
+          action: "activate"
+        register: maintaince_response
+    - name: check API response
+      debug: 
+        var: maintaince_response
