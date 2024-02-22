@@ -1,0 +1,21 @@
+---
+ - name: Generate token to access servicenow
+   hosts: localhost
+   gather_facts: no
+   
+   tasks:
+    - name: Generate token
+      uri:
+        url: "https://capeumsptest.service-now.com/"
+        method: POST
+        body_format: form-urlencoded
+        body: 
+          username: "asr.engineer"
+          password: "asr.engineer"
+          return_content: 
+          status_code: 200
+      register: response
+    
+    - name: Display the response
+      debug:
+        msg: "Generated Token: {{ response.json.token }}"
