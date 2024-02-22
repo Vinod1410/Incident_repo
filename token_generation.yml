@@ -6,7 +6,7 @@
    tasks:
     - name: Generate token
       uri:
-        url: "https://capeumsptest.service-now.com/"
+        url: "https://capeumsptest.service-now.com/token"
         method: POST
         body_format: form-urlencoded
         body: 
