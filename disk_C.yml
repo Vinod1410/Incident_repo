@@ -1,0 +1,36 @@
+---
+# return the disk free space on a windows unit with the unit name fixed: C
+- name: windows disk free space in C volume
+  hosts: "{{ HOSTS }}"
+  tasks:
+    - block:
+      - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
+        fail:
+          msg: "{{ item }} does not exist in Ansible Tower's inventory."
+        when: "item not in groups['all']"
+        with_items: "{{HOSTS}}"
+
+      rescue:
+      - name: Failure to get host in tower inventory
+        debug:
+          msg: "Automation_OUTPUT : FAILED :  This target host {{HOSTS}} does not  exist in tower Ansible Inventory 2L22"
+        failed_when: True
+
+    - block:
+     - name: Getting the free space 
+       win_shell:
+         Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Foreach-Object {$_.FreeSpace} 
+       changed_when: false
+
+     - name: Log output for Automation when successful
+       debug:
+         msg:
+          - "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
+
+     rescue:
+     - name: Log output for Automation when failed
+       debug:
+         msg:
+          - "Automation_OUTPUT : FAILED : Task {{ ansible_failed_task.name}} failed on {{ HOSTS }} : {{ ansible_failed_result.msg }}"
+       failed_when: True
+
