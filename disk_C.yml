@@ -26,10 +26,10 @@
         debug:
           msg: "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
 
-     rescue:
-     - name: Log output for Automation when failed
-       debug:
-         msg:
+      rescue:
+      - name: Log output for Automation when failed
+        debug:
+          msg:
           - "Automation_OUTPUT : FAILED : Task {{ ansible_failed_task.name}} failed on {{ HOSTS }} : {{ ansible_failed_result.msg }}"
-       failed_when: True
+        failed_when: True
 
