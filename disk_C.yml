@@ -24,8 +24,7 @@
 
       - name: Log output for Automation when successful
         debug:
-          msg:
-           - "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
+          msg: "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
 
      rescue:
      - name: Log output for Automation when failed
