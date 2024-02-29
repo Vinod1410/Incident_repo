@@ -17,15 +17,15 @@
         failed_when: True
 
     - block:
-     - name: Getting the free space 
-       win_shell:
+      - name: Getting the free space 
+        win_shell:
          Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Foreach-Object {$_.FreeSpace} 
-       changed_when: false
+        changed_when: false
 
-     - name: Log output for Automation when successful
-       debug:
-         msg:
-          - "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
+      - name: Log output for Automation when successful
+        debug:
+          msg:
+           - "Automation_OUTPUT : SUCCESSFUL on {{ HOSTS }}"
 
      rescue:
      - name: Log output for Automation when failed
