@@ -1,7 +1,7 @@
 ---
 # return the disk free space on a windows unit with the unit name fixed: C
 - name: windows disk free space in C volume
-  hosts: "{{ HOSTS }}"
+  hosts: "localhost"
   tasks:
     - block:
       - name: "Fail if Extra Variable {{ HOSTS }} does not exist in Ansible Tower's inventory"
