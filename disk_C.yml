@@ -18,8 +18,9 @@
 
     - block:
       - name: Getting the free space 
-        win_shell:
-         Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Foreach-Object {$_.FreeSpace} 
+        ansible.windows.win_powershell:
+          script: |
+            Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Foreach-Object {$_.FreeSpace} 
         changed_when: false
 
       - name: Log output for Automation when successful
