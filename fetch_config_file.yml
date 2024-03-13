@@ -7,7 +7,7 @@
 
     - name: Fetch config file from GitHub
       uri:
-        url: "https://github.com/Vinod1410/Incident_repo.git/server_config_file"
+        url: "https://github.com/Vinod1410/Incident_repo.git/server_config_file.xlsx"
         method: GET
       register: server_details
 
