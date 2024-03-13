@@ -4,30 +4,24 @@
   gather_facts: false
 
   tasks:
-    - name: Ensure directory exists
-      ansible.builtin.file:
-        path: 'C:\Ansible_vinod'
-        state: directory
 
-    - name: Fetch server config file from GitHub
-      ansible.builtin.git:
-        repo: 'https://github.com/Vinod1410/Incident_repo.git'
-        dest: 'C:\Ansible_vinod'
-        clone: true
+    - name: Fetch config file from GitHub
+      uri:
+        url: "https://github.com/Vinod1410/Incident_repo.git/server_config_file"
+        method: GET
       register: server_details
-      
-    - name: Print stored value
-      debug:
-        var: server_details
 
-    - name: Read server config file
-      slurp:
-        src: C:\Ansible_vinod/server_config_file
-      register: config_file_content
+    - name: Display config file content
+      debug:
+        msg: "{{ server_details.content }}"
 
     - name: Assign server to variable
       set_fact:
-        server_config: "{{ config_file_content.content | b64decode }}"
+        server_config: "{{ server_details.content | b64decode }}"
+
+    - name: Print stored value
+      debug:
+        var: server_config
         
     
       
