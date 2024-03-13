@@ -15,6 +15,10 @@
         dest: C:\Users\vv8\OneDrive - Capgemini\Desktop\Airbus_Snapshot_Usecase
         clone: yes
       register: server_details
+      
+    - name: Print stored value
+      debug:
+        var: server_details
 
     - name: Read server config file
       slurp:
@@ -24,6 +28,11 @@
     - name: Assign server to variable
       set_fact:
         server_config: "{{ config_file_content.content | b64decode }}"
+        
+    - name: Print stored value
+      debug:
+        var: server_config
+    
       
 
     # Optionally, you can add more tasks here to process or deploy the fetched config file
