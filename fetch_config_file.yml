@@ -11,14 +11,6 @@
         method: GET
       register: server_details
 
-    - name: Debug GitHub response
-      debug:
-        var: server_details
-
-    - name: Display config file content
-      debug:
-        msg: "{{ server_details.content }}"
-
     - name: Assign server to variable
       set_fact:
         server_config: "{{ server_details.content | b64decode }}"
