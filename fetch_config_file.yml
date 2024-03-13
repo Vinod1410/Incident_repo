@@ -6,14 +6,14 @@
   tasks:
     - name: Ensure directory exists
       ansible.builtin.file:
-        path: C:\Ansible_vinod
+        path: 'C:\Ansible_vinod'
         state: directory
 
     - name: Fetch server config file from GitHub
       ansible.builtin.git:
-        repo: https://github.com/Vinod1410/Incident_repo.git
-        dest: C:\Ansible_vinod
-        clone: yes
+        repo: 'https://github.com/Vinod1410/Incident_repo.git'
+        dest: 'C:\Ansible_vinod'
+        clone: true
       register: server_details
       
     - name: Print stored value
