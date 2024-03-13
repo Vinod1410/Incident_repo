@@ -11,13 +11,14 @@
         method: GET
       register: server_details
 
-    - name: Assign server to variable
-      set_fact:
-        server_config: "{{ server_details.content | b64decode }}"
 
-    - name: Print stored value
+    - name: Assign registered output to dictionary variable
+      set_fact:
+        my_dict: "{{ server_details.stdout | from_yaml }}"
+
+    - name: Display dictionary variable
       debug:
-        var: server_config
+        var: my_dict
         
     
       
