@@ -6,13 +6,13 @@
   tasks:
     - name: Ensure directory exists
       ansible.builtin.file:
-        path: C:\Users\vv8\OneDrive - Capgemini\Desktop\Airbus_Snapshot_Usecase
+        path: C:\Ansible_vinod
         state: directory
 
     - name: Fetch server config file from GitHub
       ansible.builtin.git:
         repo: https://github.com/Vinod1410/Incident_repo.git
-        dest: C:\Users\vv8\OneDrive - Capgemini\Desktop\Airbus_Snapshot_Usecase
+        dest: C:\Ansible_vinod
         clone: yes
       register: server_details
       
@@ -22,16 +22,13 @@
 
     - name: Read server config file
       slurp:
-        src: C:\Users\vv8\OneDrive - Capgemini\Desktop\Airbus_Snapshot_Usecase/server_config_file
+        src: C:\Ansible_vinod/server_config_file
       register: config_file_content
 
     - name: Assign server to variable
       set_fact:
         server_config: "{{ config_file_content.content | b64decode }}"
         
-    - name: Print stored value
-      debug:
-        var: server_config
     
       
 
