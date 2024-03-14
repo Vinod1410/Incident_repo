@@ -1,19 +1,13 @@
 ---
-- name: Fetch Server Config File from GitHub
+- name: Read users from CSV file and return a dictionary
   hosts: localhost
-  gather_facts: false
-
   tasks:
-    - name: Read users from CSV file and return a dictionary
-      read_csv:
-        path: server_data.csv
-        key: Server Name
-      register: serverlist
-      delegate_to: localhost
+    - name: Load data from CSV file
+      set_fact:
+        users_data: "{{ lookup('csvfile', 'https://github.com/Vinod1410/Incident_repo/blob/main/server_data.csv') }}"
+    - debug:
+        var: users_data
 
-    - ansible.builtin.debug:
-        msg: 'serverdetails {{ serverlist.dict.Server Name }}'
-   
 
 
         
