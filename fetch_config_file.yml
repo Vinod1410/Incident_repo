@@ -4,7 +4,7 @@
   tasks:
     - name: Load data from CSV file
       set_fact:
-        users_data: "{{ lookup('csvfile', 'https://github.com/Vinod1410/Incident_repo/blob/main/server_data.csv') }}"
+        users_data: "{{ lookup('csvfile', 'server_data.csv') }}"
     - debug:
         var: users_data
 
