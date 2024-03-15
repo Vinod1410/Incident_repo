@@ -7,7 +7,6 @@
     - name: Read users from CSV file and return a dictionary
       community.general.read_csv:
         path: server_data.csv
-        key: ServerName
       register: serverlist
       delegate_to: localhost
 
