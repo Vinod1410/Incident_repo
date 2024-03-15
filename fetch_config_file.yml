@@ -7,12 +7,12 @@
     - name: Read users from CSV file and return a dictionary
       community.general.read_csv:
         path: server_data.csv
-        key: Server Name
+        key: ServerName
       register: serverlist
       delegate_to: localhost
 
     - ansible.builtin.debug:
-        msg: 'serverdetails {{ serverlist.dict.Server Name }}'
+        msg: 'serverdetails {{ serverlist.dict.ServerName }}'
    
 
 
