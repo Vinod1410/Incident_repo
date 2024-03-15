@@ -12,6 +12,15 @@
 
     - ansible.builtin.debug:
         msg: '{{ serverlist }}'
+
+    - name: Assign values to variables
+  set_fact:
+    server_names: "{{ serverlist | json_query('[].ServerName') }}"
+    vcenter_names: "{{ serverlist | json_query('[].vcenterName') }}"
+
+    - name: print the dict variables
+      debug:
+        msg: 'servername {{ server_names }} & vcenter {{ vcenter_names }}'
    
 
 
