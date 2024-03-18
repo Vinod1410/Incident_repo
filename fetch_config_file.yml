@@ -15,8 +15,8 @@
 
     - name: Assign values to variables
       set_fact:
-        server_names: "{{ item.ServerName }}"
-        vcenter_names: "{{ item.vcenterName }}"
+        server_names: "{{ server_names | default([]) + [item.ServerName] }}"
+        vcenter_names: "{{ vcenter_names | default([]) + [item.vcenterName] }}"
       with_items: "{{ serverlist.list }}"
 
     - debug:
