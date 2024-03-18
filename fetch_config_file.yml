@@ -18,6 +18,10 @@
         server_names: "{{ serverlist.list | map(attribute='ServerName') | list }}"
         vcenter_names: "{{ serverlist.list | map(attribute='vcenterName') | list }}"
 
+    - debug:
+        msg: "Server Name: {{ item.Server_names }}"
+      with_items: "{{ serverlist.list }}"
+
     - name: Print Server List
       debug:
         msg: "ServerName: {{ server_names }}, vcenterName: {{ vcenter_names }}"
