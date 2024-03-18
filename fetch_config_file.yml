@@ -13,9 +13,15 @@
     - ansible.builtin.debug:
         msg: '{{ serverlist }}'
 
-    - debug:
-        msg: "Server Name: {{ item.ServerName }}"
+    - name: Assign values to variables
+      set_fact:
+        server_names: "{{ item.ServerName }}"
+        vcenter_names: "{{ item.vcenterName }}"
       with_items: "{{ serverlist.list }}"
+
+    - debug:
+        msg: "Server Name: {{ server_names }}, Vcenter Name: {{ vcenter_names }}"
+      
 
    
       
