@@ -18,9 +18,10 @@
         server_names: "{{ serverlist | json_query('[].ServerName') }}"
         vcenter_names: "{{ serverlist | json_query('[].vcenterName') }}"
 
-    - name: print the dict variables
+    - name: Print Server List
       debug:
-        msg: '{{ serverlist.list.ServerName }}'
+        msg: "ServerName: {{ item.ServerName }}, vcenterName: {{ item.vcenterName }}"
+      loop: "{{ msg.list }}"
    
 
 
