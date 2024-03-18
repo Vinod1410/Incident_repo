@@ -20,7 +20,7 @@
 
     - name: print the dict variables
       debug:
-        msg: '{{ server_names }}'
+        msg: '{{ msg.list.ServerName }}'
    
 
 
