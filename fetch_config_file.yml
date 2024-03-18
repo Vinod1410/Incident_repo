@@ -15,13 +15,13 @@
 
     - name: Assign values to variables
       set_fact:
-        server_names: "{{ serverlist | json_query('[].ServerName') }}"
-        vcenter_names: "{{ serverlist | json_query('[].vcenterName') }}"
+        server_names: "{{ serverlist.list | map(attribute='ServerName') | list }}"
+        vcenter_names: "{{ serverlist.list | map(attribute='vcenterName') | list }}"
 
     - name: Print Server List
       debug:
-        msg: "ServerName: {{ item.ServerName }}, vcenterName: {{ item.vcenterName }}"
-      loop: "{{ msg.list }}"
+        msg: "ServerName: {{ server_names }}, vcenterName: {{ vcenter_names }}"
+      
    
 
 
