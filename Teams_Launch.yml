@@ -1,0 +1,53 @@
+---
+- name: Launch Microsoft Teams and initiate call
+  hosts: localhost
+  tasks:
+    - name: Launch Microsoft Teams
+      win_shell: |
+        Start-Process "C:\Program Files (x86)\Microsoft\Teams\current\Teams.exe"
+      become: yes
+      become_user: "{{ ansible_user }}"
+      become_method: runas
+
+    - name: Pause to allow Teams to launch
+      pause:
+        seconds: 10
+
+    - name: Initiate call to a particular person
+      win_shell: |
+        $teamsProcess = Get-Process -Name Teams -ErrorAction SilentlyContinue
+        if ($teamsProcess) {
+          $teamsProcessId = $teamsProcess.Id
+          $contactEmail = "k.lavanya-meghana@capgemini.com"  # Replace with the email of the person you want to call
+          $teamsProcessMainWindow = $teamsProcess.MainWindowHandle
+          $teamsWindow = [Microsoft.VisualBasic.Interaction]::AppActivate($teamsProcessMainWindow)
+          if ($teamsWindow) {
+            Start-Sleep -Seconds 2
+            Add-Type @"
+              using System;
+              using System.Runtime.InteropServices;
+              public class TeamsCaller {
+                [DllImport("user32.dll")]
+                public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+                public const int KEYEVENTF_KEYUP = 0x0002;
+                public const int VK_CONTROL = 0x11;
+                public const int VK_SHIFT = 0x10;
+              }"@
+            [TeamsCaller]::keybd_event([TeamsCaller]::VK_SHIFT, 0, 0, [UIntPtr]::Zero)
+            Start-Sleep -Seconds 1
+            [TeamsCaller]::keybd_event([TeamsCaller]::VK_SHIFT, 0, [TeamsCaller]::KEYEVENTF_KEYUP, [UIntPtr]::Zero)
+            Start-Sleep -Seconds 1
+            [TeamsCaller]::keybd_event([TeamsCaller]::VK_CONTROL, 0, 0, [UIntPtr]::Zero)
+            Start-Sleep -Seconds 1
+            [TeamsCaller]::keybd_event([TeamsCaller]::VK_CONTROL, 0, [TeamsCaller]::KEYEVENTF_KEYUP, [UIntPtr]::Zero)
+            Start-Sleep -Seconds 2
+            [System.Windows.Forms.SendKeys]::SendWait("^n")
+            Start-Sleep -Seconds 2
+            [System.Windows.Forms.SendKeys]::SendWait("$contactEmail")
+            Start-Sleep -Seconds 2
+            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+          }
+        }
+      become: yes
+      become_user: "{{ ansible_user }}"
+      become_method: runas
