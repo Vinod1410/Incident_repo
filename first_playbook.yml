@@ -2,9 +2,6 @@
  - name: my first playbook
    hosts: 16.170.40.72
    tasks:
-    - name: ping the server
-      ansible.builtin.ping:
-    
     - name: print message
       ansible.builtin.debug:
        msg: Hello everyone this is my first playbook
