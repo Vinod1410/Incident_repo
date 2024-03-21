@@ -1,6 +1,6 @@
 ---
  - name: my first playbook
-   hosts: 15.206.27.134
+   hosts: 16.170.40.72
    tasks:
     - name: ping the server
       ansible.builtin.ping:
