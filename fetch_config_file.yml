@@ -1,6 +1,6 @@
 ---
 - name: Fetch Server Config File from GitHub
-  hosts: localhost
+  hosts: 16.170.40.72
   gather_facts: false
 
   tasks:
@@ -8,7 +8,7 @@
       community.general.read_csv:
         path: server_data.csv
       register: serverlist
-      delegate_to: localhost
+      delegate_to: 16.170.40.72
 
     - ansible.builtin.debug:
         msg: '{{ serverlist }}'
