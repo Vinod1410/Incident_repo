@@ -33,8 +33,6 @@
     - block:
         - name: Execute Powershell Script present in the jump host
           win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
-          fail:
-            msg: script not present on the location
           register: result
           changed_when: false
       rescue:
