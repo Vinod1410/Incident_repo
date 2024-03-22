@@ -1,23 +1,14 @@
 ---
 - name: playbook to launch the script.
-  hosts: "{{ HOSTS }}"
+  hosts: 16.170.40.72
   gather_facts: no
   vars:
     HOSTS:
 - tasks:
-    - block:
-        - name: Failed if extra varable {{ HOSTS }} not present in the Inventory
-          fail:
-            msg: "{{ item }} does not exist in inventory."
-          when: item not in groups['all']
-          with_items: "{{HOSTS}}"
-      rescue:
-        - name: Failure to get host in tower inventory
-          debug:
-            msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the
-              Inventory"
-          failed_when: true
     - name: Execute Powershell Script present in the jump host
       win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
       register: result
       changed_when: false
+    - name: print success message
+      debug:
+        msg: "script executed sucessfully {{ result }}"
