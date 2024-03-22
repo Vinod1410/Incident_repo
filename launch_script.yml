@@ -9,7 +9,7 @@
        fail:
           msg: "{{ item }} does not exist in inventory."
        when: "item not in groups['all']"
-       with_items: "{{HOSTS}}"
+       with_items: "{{ HOSTS }}"
    - rescue:
      - name: Failure to get host in tower inventory
        debug:
