@@ -23,5 +23,5 @@
       
     - name: print the sucess result
       debug:
-        msg: "script executed {{ resut }} sucessfully."
+        msg: "script executed {{ result }} sucessfully."
       
