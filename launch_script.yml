@@ -1,12 +1,12 @@
 ---
-- name: playbook to launch the script.
-  hosts: 16.170.40.72
-  gather_facts: no
-- tasks:
-    - name: Execute Powershell Script present in the jump host
-      win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
-      register: result
-      changed_when: false
-    - name: print success message
-      debug:
-        msg: "script executed sucessfully {{ result }}"
+ - name: playbook to launch the script.
+   hosts: 16.170.40.72
+   gather_facts: no
+ - tasks:
+     - name: Execute Powershell Script present in the jump host
+       win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
+       register: result
+       changed_when: false
+     - name: print success message
+       debug:
+         msg: "script executed sucessfully {{ result }}"
