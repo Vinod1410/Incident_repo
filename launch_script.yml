@@ -40,7 +40,7 @@
           debug:
             msg: "OUTPUT: FAILED : Failed to execute the script"
           failed_when: true
-- name: Check script execution
-  debug:
-    msg: Script executed successfully
-  when: result is succeeded
+   - name: Check script execution
+     debug:
+       msg: Script executed successfully
+     when: result is succeeded
