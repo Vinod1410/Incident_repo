@@ -15,7 +15,13 @@
             msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the
               Inventory"
           failed_when: true
+          
     - name: Execute Powershell Script present in the jump host
       win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
       register: result
       changed_when: false
+      
+    - name: print the sucess result
+      debug:
+        msg: "script executed {{ resut }} sucessfully."
+      
