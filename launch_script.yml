@@ -5,7 +5,7 @@
 
  - tasks:
    - block:
-     - name: "Failed if extra varable {{ HOSTS }} not present in the Inventory"
+     - name: "Failed if extra varable "{{ HOSTS }}" not present in the Inventory"
        fail:
           msg: "{{ item }} does not exist in inventory."
        when: "item not in groups['all']"
