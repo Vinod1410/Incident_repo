@@ -10,11 +10,11 @@
           msg: "{{ item }} does not exist in inventory."
        when: "item not in groups['all']"
        with_items: "{{ HOSTS }}"
-   - rescue:
-     - name: Failure to get host in tower inventory
-       debug:
-         msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the Inventory"
-       failed_when: True
+       rescue:
+       - name: Failure to get host in tower inventory
+         debug:
+           msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the Inventory"
+         failed_when: True
    
    - name: "Execute Powershell Script present in the jump host"
      win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
