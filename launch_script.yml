@@ -1,27 +1,50 @@
 ---
-- name: playbook to launch the script.
-  hosts: "{{ HOSTS }}"
-  gather_facts: no
-  tasks:
-    - block:
-        - name: Failed if extra varable {{ HOSTS }} not present in the Inventory
-          fail:
-            msg: "{{ item }} does not exist in inventory."
-          when: item not in groups['all']
-          with_items: "{{HOSTS}}"
-      rescue:
-        - name: Failure to get host in tower inventory
-          debug:
-            msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the
-              Inventory"
-          failed_when: true
-          
-    - name: Execute Powershell Script present in the jump host
-      win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
-      register: result
-      changed_when: false
-      
-    - name: print the sucess result
-      debug:
-        msg: "script executed {{ result }} sucessfully."
-      
+ - name: playbook to launch the script.
+   hosts: "{{ HOSTS }}"
+   gather_facts: no
+
+ - tasks:
+     - block:
+       - name: "Failed if extra varable {{ HOSTS }} not present in the Inventory"
+         fail:
+           msg: "{{ item }} does not exist in inventory."
+         when: "item not in groups['all']"
+         with_items: "{{HOSTS}}"
+       rescue:
+       - name: Failure to get host in tower inventory
+         debug:
+           msg: "OUTPUT: FAILED :  This target host {{ HOSTS }} does not exist in the Inventory"
+         failed_when: True
+
+  - name: Check if the file exists
+    stat:
+      path: C:\Users\service_test.ps1
+    register: File_output
+
+ - name: Print result
+   debug:
+     msg: "Script exists at the specified location."
+   when: File_output.stat.exists
+
+ - name: Print result
+   debug:
+      msg: "Script does not exist at the specified location."
+   when: not File_output.stat.exists
+
+ - tasks:
+     - block:
+       - name: "Execute Powershell Script present in the jump host"
+         win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
+         fail:
+           msg: "script not present on the location"
+         register: result
+         changed_when: false
+       rescue:
+       - name: Failed to Execute the script from jump host.
+         debug:
+           msg: "OUTPUT: FAILED : Failed to execute the script"
+         failed_when: True
+ - name: Check script execution
+   debug:
+     msg: "Script executed successfully"
+   when: result is succeeded
