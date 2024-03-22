@@ -2,6 +2,8 @@
 - name: playbook to launch the script.
   hosts: "{{ HOSTS }}"
   gather_facts: no
+  vars:
+    HOSTS:
 - tasks:
     - block:
         - name: Failed if extra varable {{ HOSTS }} not present in the Inventory
