@@ -34,10 +34,13 @@
         - name: Execute Powershell Script present in the jump host
           win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
           register: result
+          changed_when: false
+          
+        - name: check the script.
           debug:
             msg: Script executed successfully
           when: result is succeeded
-          changed_when: false
+          
       rescue:
         - name: Failed to Execute the script from jump host.
           debug:
