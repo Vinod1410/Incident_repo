@@ -1,0 +1,32 @@
+---
+- name: playbook to execute script
+  hosts: "{{ HOSTS }}"
+  gather_facts: no
+- tasks:
+    - block:
+        - name: Check if the file exists
+          stat:
+            path: C:\Users\service_test.ps1
+          register: File_output
+        - name: Print result
+          debug:
+            msg: Script exists at the specified location.
+          when: File_output.stat.exists
+        - name: Print result
+          debug:
+            msg: Script does not exist at the specified location.
+          when: not File_output.stat.exists
+        - name: Execute Powershell Script present in the jump host
+          win_command: powershell.exe -ExecutionPolicy ByPass -File
+            C:\Users\service_test.ps1
+          register: result
+          changed_when: false
+        - name: check the script.
+          debug:
+            msg: Script executed successfully
+          when: result is succeeded
+      rescue:
+        - name: Failed to Execute the script from jump host.
+          debug:
+            msg: "OUTPUT: FAILED : Failed to execute the script"
+          failed_when: true
