@@ -5,3 +5,10 @@
     - name: print message
       ansible.builtin.debug:
        msg: Hello everyone this is my first playbook on "{{ HOSTS }}"
+       
+    - name: Execute Powershell Script present in the jump host
+      win_command: get-hostname 
+      register: result
+    - name: print hostname.
+      debug:
+        msg: "{{ result }}"
