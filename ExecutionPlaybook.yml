@@ -3,7 +3,7 @@
   hosts: "{{ HOSTS }}"
   gather_facts: no
   
-- tasks:
+  tasks:
     
         - name: Check if the file exists
           win_stat:
