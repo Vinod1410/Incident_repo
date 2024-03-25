@@ -5,7 +5,7 @@
 - tasks:
     - block:
         - name: Check if the file exists
-          Win_stat:
+          win_stat:
             path: C:\Users\service_test.ps1
           register: File_output
         - name: Print result
