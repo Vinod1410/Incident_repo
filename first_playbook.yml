@@ -9,6 +9,16 @@
     - name: Execute Powershell Script present in the jump host
       win_command: hostname 
       register: result
+      
     - name: print hostname.
       debug:
         msg: "{{ result }}"
+        
+    - name: Check if the file exists
+      stat:
+        path: C:\Users\service_test.ps1
+      register: File_output
+    - name: Print result
+      debug:
+        msg: Script exists at the specified location.
+      when: File_output.stat.exists
