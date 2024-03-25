@@ -2,8 +2,9 @@
 - name: playbook to execute script
   hosts: "{{ HOSTS }}"
   gather_facts: no
+  
 - tasks:
-    - block:
+    
         - name: Check if the file exists
           win_stat:
             path: C:\Users\service_test.ps1
@@ -25,7 +26,7 @@
           debug:
             msg: Script executed successfully
           when: result is succeeded
-      rescue:
+      
         - name: Failed to Execute the script from jump host.
           debug:
             msg: "OUTPUT: FAILED : Failed to execute the script"
