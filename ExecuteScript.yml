@@ -2,6 +2,8 @@
 - name: Playbook to Execute powershell script.
   hosts: "{{ HOSTS }}"
   gather_facts: yes
+  vars:
+    HOSTS
 - tasks:
     - block:
         - name: Check if the file exists
