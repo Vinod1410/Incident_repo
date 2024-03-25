@@ -1,7 +1,7 @@
 ---
  - name: my first playbook
-   hosts: 16.170.40.72
+   hosts: "{{ HOSTS }}"
    tasks:
     - name: print message
       ansible.builtin.debug:
-       msg: Hello everyone this is my first playbook
+       msg: Hello everyone this is my first playbook on "{{ HOSTS }}"
