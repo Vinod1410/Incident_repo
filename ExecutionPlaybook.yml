@@ -7,7 +7,7 @@
     - block:
         - name: Check if the file exists
           win_stat:
-            path: C:\Users\service_test123.ps1
+            path: C:\Users\service_test12.ps1
           register: File_output
           
         - name: Print result
@@ -29,6 +29,7 @@
           debug:
             msg: "OUTPUT: FAILED : Script does not exist at the specified location."
           when: not File_output.stat.exists
+          failed_when: true
           
         - name: Failed to Execute the script from jump host.
           debug:
