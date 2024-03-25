@@ -1,6 +1,6 @@
 ---
 - name: playbook to launch the script.
-  hosts: "16.170.40.72"
+  hosts: "{{ HOSTS }}"
   gather_facts: no
 
 - tasks:
