@@ -27,7 +27,7 @@
       rescue:
         - name: Print result
           debug:
-            msg: Script does not exist at the specified location.
+            msg: "OUTPUT: FAILED : Script does not exist at the specified location."
           when: not File_output.stat.exists
           
         - name: Failed to Execute the script from jump host.
