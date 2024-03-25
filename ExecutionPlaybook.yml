@@ -17,11 +17,12 @@
           debug:
             msg: Script does not exist at the specified location.
           when: not File_output.stat.exists
+          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File
-            C:\Users\service_test.ps1
+          win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
           register: result
           changed_when: false
+          
         - name: check the script.
           debug:
             msg: Script executed successfully
