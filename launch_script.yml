@@ -1,6 +1,5 @@
 ---
 - name: playbook to launch the script.
-  hosts: "{{ HOSTS }}"
   gather_facts: yes
 - tasks:
     - block:
