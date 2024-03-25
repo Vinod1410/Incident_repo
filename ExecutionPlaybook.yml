@@ -1,7 +1,7 @@
 ---
 - name: playbook to execute script
   hosts: "{{ HOSTS }}"
-  gather_facts: no
+  gather_facts: yes
   
   tasks:
     - block:
