@@ -7,7 +7,7 @@
     - block:
         - name: Check if the file exists
           win_stat:
-            path: C:\Users\service_test.ps1
+            path: C:\Users\service_test123.ps1
           register: File_output
           
         - name: Print result
@@ -16,7 +16,7 @@
           when: File_output.stat.exists
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1
+          win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test123.ps1
           register: result
           changed_when: false
           
