@@ -22,7 +22,7 @@
 
         - name: Print the script Output
           debug:
-            msg: SCRIPT: OUTPUT "{{ result }}"
+            msg: "OUTPUT: SCRIPT RESULT : {{ result }}"
           
         - name: check the script.
           debug:
