@@ -12,7 +12,7 @@
           
         - name: Print result
           debug:
-            msg: Script exists at the specified location.
+            msg: "Script exists at the specified location {{ File_output }}".
           when: File_output.stat.exists
          
         - name: Execute Powershell Script present in the jump host
@@ -31,7 +31,7 @@
       rescue:
         - name: Print result
           debug:
-            msg: "OUTPUT: FAILED : Script does not exist at the specified location."
+            msg: "OUTPUT: FAILED : Script does not exist at the specified location {{ File_output }}"
           when: not File_output.stat.exists
           failed_when: true
           
