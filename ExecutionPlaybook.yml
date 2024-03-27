@@ -19,6 +19,10 @@
           win_command: powershell.exe -ExecutionPolicy ByPass -File C:\Users\service_test.ps1 -serviceName "{{ serviceName }}"
           register: result
           changed_when: false
+
+        - name: Print the script Output
+          debug:
+            msg: SCRIPT: OUTPUT "{{ result }}"
           
         - name: check the script.
           debug:
@@ -33,5 +37,5 @@
           
         - name: Failed to Execute the script from jump host.
           debug:
-            msg: "OUTPUT: FAILED : Failed to execute the script"
+            msg: "OUTPUT: FAILED : Failed to execute the script {{ result }}"
           failed_when: true
