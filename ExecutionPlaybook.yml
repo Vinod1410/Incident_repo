@@ -7,7 +7,7 @@
     - block:
         - name: Check if the file exists
           win_stat:
-            path: "C:/Users/service_test.exe"
+            path: "C:/Users/service_test1.exe"
           register: File_output
           
         - name: Print result
@@ -17,7 +17,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -Command "C:/Users/service_test.exe" -serviceName "{{ serviceName }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -Command "C:/Users/service_test1.exe" -serviceName "{{ serviceName }}"
           register: result
           changed_when: false
 
