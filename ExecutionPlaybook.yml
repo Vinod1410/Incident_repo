@@ -21,7 +21,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -Command "C:/Users/service_test.exe" -serviceName "{{ serviceName }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareusername "{{ VMWARE_USER }}" -VMwarePassword "{{ VMWARE_PASSWORD }}"
           register: result
           changed_when: false
 
