@@ -7,7 +7,7 @@
     - block:
         - name: print the credentials
           debug:
-            msg: "username {{ ansible_user }} and password {{ ansible_password }}"
+            msg: "username {{ VMWARE_USER }} and password {{ VMWARE_PASSWORD }}"
             
         - name: Check if the file exists
           win_stat:
@@ -21,7 +21,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareusername "{{ VMWARE_USER }}" -VMwarePassword "{{ VMWARE_PASSWORD }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareUsername "{{ VMWARE_USER }}" -VMwarePassword "{{ VMWARE_PASSWORD }}"
           register: result
           changed_when: false
 
