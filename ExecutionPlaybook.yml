@@ -7,7 +7,7 @@
     - block:
         - name: Check if the file exists
           win_stat:
-            path: r'C:\Users\service_test.exe'
+            path: r 'C:\Users\service_test.exe'
           register: File_output
           
         - name: Print result
