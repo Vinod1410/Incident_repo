@@ -6,16 +6,13 @@
     host: '{{ lookup("env", "VMWARE_HOST") }}'
     username: '{{ lookup("env", "VMWARE_USER") }}'
     password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+    script_path: "{{ script_path }}"
   
   tasks:
     - block:
-        - name: print the credentials
-          debug:
-            msg: "username {{ username }} and password {{ password }}"
-            
         - name: Check if the file exists
           win_stat:
-            path: "C:/Users/service_test.exe"
+            path: "{{ script_path }}"
           register: File_output
           
         - name: Print File location
@@ -25,7 +22,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareUsername "{{ password }}" -VMwarePassword "{{ password }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -File "{{ script_path }}" -serviceName "{{ serviceName }}" -VMwareUsername "{{ password }}" -VMwarePassword "{{ password }}"
           register: result
           changed_when: false
 
