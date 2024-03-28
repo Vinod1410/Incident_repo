@@ -5,6 +5,10 @@
   
   tasks:
     - block:
+        - name: print the credentials
+          debug:
+            msg: "username {{ ansible_username }} and password {{ ansible_password }}
+            
         - name: Check if the file exists
           win_stat:
             path: "C:/Users/service_test.exe"
