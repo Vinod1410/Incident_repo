@@ -16,7 +16,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.exe" -serviceName "{{ serviceName }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -File C:/Users/service_test.exe -serviceName "{{ serviceName }}"
           register: result
           changed_when: false
 
@@ -31,7 +31,8 @@
       rescue:
         - name: Print result
           debug:
-            msg: "OUTPUT: FAILED : Script does not exist at the specified location {{ not File_output.stat.exists }}" 
+            msg: "OUTPUT: FAILED : Script does not exist at the specified location" 
+          when: not File_output.stat.exists
           failed_when: true
           
         - name: Failed to Execute the script from jump host.
