@@ -7,7 +7,7 @@
     - block:
         - name: print the credentials
           debug:
-            msg: "username {{ ansible_username }} and password {{ ansible_password }}
+            msg: "username {{ ansible_user }} and password {{ ansible_password }}"
             
         - name: Check if the file exists
           win_stat:
