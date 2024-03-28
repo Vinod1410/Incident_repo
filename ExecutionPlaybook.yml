@@ -7,25 +7,25 @@
     - block:
         - name: Check if the file exists
           win_stat:
-            path: "C:/Users/service_test1.exe"
+            path: "C:/Users/service_test.exe"
           register: File_output
           
-        - name: Print result
+        - name: Print File location
           debug:
             msg: "File exists at the specified location: {{ File_output }}"
           when: File_output.stat.exists
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -Command "C:/Users/service_test1.exe" -serviceName "{{ serviceName }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -Command "C:/Users/service_test.exe" -serviceName "{{ serviceName }}"
           register: result
           changed_when: false
 
-        - name: Print the script Output
+        - name: Print the powershell script Output
           debug:
             msg: "OUTPUT: SCRIPT RESULT : {{ result }}"
           
-        - name: check the script.
+        - name: Script Execution sucessfull.
           debug:
             msg: Script executed successfully
           when: result is succeeded
