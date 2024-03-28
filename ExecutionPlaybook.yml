@@ -2,12 +2,17 @@
 - name: playbook to execute script
   hosts: "{{ HOSTS }}"
   gather_facts: yes
+  vars:
+  vmware:
+    host: '{{ lookup("env", "VMWARE_HOST") }}'
+    username: '{{ lookup("env", "VMWARE_USER") }}'
+    password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
   
   tasks:
     - block:
         - name: print the credentials
           debug:
-            msg: "username {{ VMWARE_USER }} and password {{ VMWARE_PASSWORD }}"
+            msg: "username {{ username }} and password {{ password }}"
             
         - name: Check if the file exists
           win_stat:
@@ -21,7 +26,7 @@
           
          
         - name: Execute Powershell Script present in the jump host
-          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareUsername "{{ VMWARE_USER }}" -VMwarePassword "{{ VMWARE_PASSWORD }}"
+          win_command: powershell.exe -ExecutionPolicy ByPass -File "C:/Users/service_test.ps1" -serviceName "{{ serviceName }}" -VMwareUsername "{{ password }}" -VMwarePassword "{{ password }}"
           register: result
           changed_when: false
 
