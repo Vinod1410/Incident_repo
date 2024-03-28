@@ -12,7 +12,7 @@
           
         - name: Print result
           debug:
-            msg: "File exists at the specified location: {{ File_output.stat.exists }}""
+            msg: "File exists at the specified location: {{ File_output.stat.exists }}"
           
          
         - name: Execute Powershell Script present in the jump host
